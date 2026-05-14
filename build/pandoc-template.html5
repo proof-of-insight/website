@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="$lang$" xml:lang="$lang$">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$if(title)$$title$$else$Proof of Insight$endif$</title>
+$for(author-meta)$
+<meta name="author" content="$author-meta$">
+$endfor$
+$if(date-meta)$<meta name="dcterms.date" content="$date-meta$">$endif$
+$if(description-meta)$<meta name="description" content="$description-meta$">$endif$
+
+<meta property="og:title" content="$if(title)$$title$$else$Proof of Insight$endif$">
+<meta property="og:type" content="article">
+$if(version)$<meta property="og:url" content="https://proofofinsight.org/spec/$version$/">$endif$
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Spectral:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #FAF7F1;
+    --paper-deep: #F2EDE2;
+    --ink: #1A1816;
+    --ink-soft: #3D3935;
+    --muted: #756E64;
+    --rule: #D8D1C2;
+    --rule-soft: #E8E2D5;
+    --accent: #6B2C2C;
+    --accent-soft: #8B4040;
+    --warn-bg: #F4E9D8;
+    --warn-border: #C9A86A;
+    --warn-ink: #5C4218;
+    --measure: 38rem;
+    --gutter: clamp(1.25rem, 4vw, 3rem);
+    --sidebar-w: 18rem;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Status banner */
+  .status {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    padding: 0.55rem var(--gutter);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #000;
+  }
+  .status::before {
+    content: "";
+    width: 7px; height: 7px;
+    background: #D9A642;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(217, 166, 66, 0.2);
+  }
+  .status strong { color: #fff; font-weight: 500; }
+  .status .sep { color: #5a5852; }
+  .status a { color: var(--paper); text-decoration: underline; text-decoration-color: rgba(250, 247, 241, 0.4); }
+  .status a:hover { text-decoration-color: var(--paper); }
+
+  /* Layout: sidebar + main on wide viewports, stacked otherwise */
+  .layout {
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  @media (min-width: 980px) {
+    .layout {
+      grid-template-columns: var(--sidebar-w) 1fr;
+      gap: 4rem;
+    }
+  }
+
+  /* Sidebar TOC */
+  nav#TOC {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    padding-top: 3rem;
+  }
+  @media (min-width: 980px) {
+    nav#TOC {
+      position: sticky;
+      top: 2rem;
+      align-self: start;
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+      padding-right: 0.75rem;
+      border-right: 1px solid var(--rule);
+    }
+  }
+  nav#TOC ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  nav#TOC li { margin: 0.25rem 0; }
+  nav#TOC ul ul {
+    padding-left: 0.85rem;
+    margin: 0.15rem 0 0.4rem;
+    border-left: 1px solid var(--rule-soft);
+  }
+  nav#TOC a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    display: block;
+    padding: 0.1rem 0;
+  }
+  nav#TOC a:hover { color: var(--accent); }
+  nav#TOC > ul > li > a {
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  /* Main content */
+  main {
+    padding: 3rem 0 6rem;
+    min-width: 0;
+  }
+
+  /* Masthead inside main */
+  header.spec-masthead {
+    padding: 0 0 3rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 3rem;
+  }
+  header.spec-masthead .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1.25rem;
+  }
+  header.spec-masthead h1 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--ink);
+  }
+  header.spec-masthead h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    color: var(--accent);
+  }
+
+  /* Spec section structure (Pandoc emits <section> with --section-divs) */
+  section {
+    margin: 3rem 0;
+  }
+  section section { margin: 2rem 0; }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', serif;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  h2 {
+    font-variation-settings: "opsz" 72, "SOFT" 50;
+    font-weight: 400;
+    font-size: clamp(1.65rem, 3.2vw, 2.1rem);
+    letter-spacing: -0.015em;
+    margin: 3rem 0 1.25rem;
+    max-width: 32rem;
+  }
+  h3 {
+    font-variation-settings: "opsz" 36, "SOFT" 50;
+    font-weight: 500;
+    font-size: 1.25rem;
+    margin: 2.25rem 0 0.7rem;
+  }
+  h4 {
+    font-variation-settings: "opsz" 24, "SOFT" 50;
+    font-weight: 500;
+    font-size: 1.05rem;
+    margin: 1.6rem 0 0.5rem;
+    color: var(--ink-soft);
+  }
+
+  /* Section anchors */
+  h1 a.header-anchor,
+  h2 a.header-anchor,
+  h3 a.header-anchor,
+  h4 a.header-anchor {
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 0.4em;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  h1:hover a.header-anchor,
+  h2:hover a.header-anchor,
+  h3:hover a.header-anchor,
+  h4:hover a.header-anchor { opacity: 1; }
+
+  /* Prose */
+  p, ul, ol, blockquote {
+    max-width: var(--measure);
+    margin: 0 0 1.1rem;
+  }
+  li { margin: 0.25rem 0; }
+  li > p { margin-bottom: 0.5rem; }
+
+  ul, ol { padding-left: 1.4rem; }
+
+  blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 0.1rem 0 0.1rem 1.1rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  blockquote p { margin-bottom: 0.6rem; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: rgba(107, 44, 44, 0.4);
+    transition: text-decoration-color 0.15s;
+  }
+  a:hover { text-decoration-color: var(--accent); }
+
+  /* Inline code matches the landing page */
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.88em;
+    background: var(--paper-deep);
+    padding: 0.08em 0.35em;
+    border-radius: 2px;
+    color: var(--ink);
+  }
+
+  /* Code blocks */
+  pre {
+    max-width: 48rem;
+    margin: 1.25rem 0 1.5rem;
+    padding: 1rem 1.15rem;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    margin: 1.25rem 0 1.75rem;
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+  th, td {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.55rem 0.85rem 0.55rem 0;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  /* Horizontal rule */
+  hr {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 2.5rem 0;
+  }
+
+  /* Strong / emphasis */
+  strong { color: var(--ink); font-weight: 500; }
+  em { color: var(--ink-soft); }
+
+  /* Footer */
+  footer.spec-foot {
+    border-top: 1px solid var(--rule);
+    margin-top: 4rem;
+    padding-top: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  footer.spec-foot a { color: var(--muted); text-decoration-color: rgba(117, 110, 100, 0.4); }
+  footer.spec-foot a:hover { color: var(--accent); }
+
+  /* Print */
+  @media print {
+    .status, nav#TOC { display: none; }
+    .layout { display: block; padding: 0; max-width: none; }
+    main { padding: 0; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+$for(header-includes)$
+$header-includes$
+$endfor$
+</head>
+<body>
+
+<div class="status" role="status">
+  <span><strong>Working Draft</strong></span>
+  <span class="sep">·</span>
+  <span>$if(version)$$version$$else$pre-1.0$endif$ — circulated for review</span>
+  <span class="sep">·</span>
+  <span>Editorial: <a href="https://github.com/proof-of-insight/spec/issues">github.com/proof-of-insight/spec</a></span>
+</div>
+
+<div class="layout">
+$if(toc)$
+$table-of-contents$
+$endif$
+
+<main>
+  <header class="spec-masthead">
+    <p class="eyebrow">Specification · $if(version)$$version$$endif$</p>
+    <h1>$if(title)$$title$$else$Proof of Insight$endif$</h1>
+  </header>
+
+$body$
+
+  <footer class="spec-foot">
+    <p>
+      Source: <a href="https://github.com/proof-of-insight/spec">github.com/proof-of-insight/spec</a> ·
+      Issues: <a href="https://github.com/proof-of-insight/spec/issues">file a spec comment</a> ·
+      Editorial contact: <a href="mailto:editors@proofofinsight.org">editors@proofofinsight.org</a>
+    </p>
+    <p>
+      Specification text © 2026 Arclio LLC, as interim editor for the Proof of Insight project. Licensed CC BY 4.0.
+    </p>
+  </footer>
+</main>
+</div>
+
+</body>
+</html>

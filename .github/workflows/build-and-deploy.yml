@@ -1,0 +1,73 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Daily rebuild. Since each version is pinned to a spec-repo tag,
+    # this is effectively a no-op unless the workflow or template
+    # changes; the daily run serves as a passive correctness signal.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+# Versions to render. Add a new entry here when a new spec version
+# is tagged in proof-of-insight/spec.
+env:
+  SPEC_VERSIONS: "v0.6.2"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Pandoc and XeLaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            pandoc \
+            texlive-xetex \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            fonts-jetbrains-mono
+
+      - name: Render specifications
+        run: |
+          for v in ${SPEC_VERSIONS}; do
+            echo "::group::Render ${v}"
+            ./build/render-spec.sh "${v}"
+            echo "::endgroup::"
+          done
+
+      - name: Assemble site
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          cp CNAME dist/
+          [ -d spec ] && cp -R spec dist/
+          [ -d schema ] && cp -R schema dist/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
