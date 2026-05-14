@@ -1,0 +1,23 @@
+build/render-spec.sh
+  s_36c4b15bec8fc2::t_2659b3b2d85639 1-83
+build/pandoc-template.html5
+  s_36c4b15bec8fc2::t_39676af8f3d14e 1-380
+.github/workflows/build-and-deploy.yml
+  s_36c4b15bec8fc2::t_e21cfa5c93370a 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "4f63c9ffe2d7f8ba31bb4d846cc21675e89b5199",
+  "prompts": {},
+  "sessions": {
+    "s_36c4b15bec8fc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "52ec7ac3-00e1-4637-8ce0-d3322a04daef",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "jkotze <jacques.kotze@gmail.com>"
+    }
+  }
+}
