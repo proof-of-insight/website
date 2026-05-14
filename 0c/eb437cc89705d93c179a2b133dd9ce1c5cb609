@@ -1,0 +1,23 @@
+.github/workflows/build-and-deploy.yml
+  s_36c4b15bec8fc2::t_c91d724a43a56d 65
+index.html
+  s_36c4b15bec8fc2::t_a6554be81d6d10 15-17
+build/pandoc-template.html5
+  s_36c4b15bec8fc2::t_fa43027c60b533 17-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "0ceb437cc89705d93c179a2b133dd9ce1c5cb609",
+  "prompts": {},
+  "sessions": {
+    "s_36c4b15bec8fc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "52ec7ac3-00e1-4637-8ce0-d3322a04daef",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "jkotze <jacques.kotze@gmail.com>"
+    }
+  }
+}
