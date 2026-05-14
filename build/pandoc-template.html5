@@ -14,6 +14,9 @@ $if(description-meta)$<meta name="description" content="$description-meta$">$end
 <meta property="og:type" content="article">
 $if(version)$<meta property="og:url" content="https://proofofinsight.org/spec/$version$/">$endif$
 
+<link rel="icon" type="image/svg+xml" href="/poi-favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/poi-favicon-32.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Spectral:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">

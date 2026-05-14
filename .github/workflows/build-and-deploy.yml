@@ -62,6 +62,7 @@ jobs:
           mkdir -p dist
           cp index.html dist/
           cp CNAME dist/
+          cp poi-favicon.svg poi-favicon-32.png dist/
           [ -d spec ] && cp -R spec dist/
           [ -d schema ] && cp -R schema dist/
 
