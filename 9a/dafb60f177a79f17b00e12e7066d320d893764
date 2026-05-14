@@ -1,0 +1,20 @@
+.github/workflows/build-and-deploy.yml
+  s_36c4b15bec8fc2::t_0d7b7ee9d18b99 26-30
+  s_36c4b15bec8fc2::t_33c1595fbed9b5 52-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "9adafb60f177a79f17b00e12e7066d320d893764",
+  "prompts": {},
+  "sessions": {
+    "s_36c4b15bec8fc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "52ec7ac3-00e1-4637-8ce0-d3322a04daef",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "jkotze <jacques.kotze@gmail.com>"
+    }
+  }
+}
