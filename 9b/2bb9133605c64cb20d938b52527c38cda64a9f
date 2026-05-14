@@ -1,0 +1,21 @@
+index.html
+  s_36c4b15bec8fc2::t_e8f98c6a695aa2 824
+  s_36c4b15bec8fc2::t_0f14a40e617695 925-926
+  s_36c4b15bec8fc2::t_d9ec89a7bdea3a 934-935
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "9b2bb9133605c64cb20d938b52527c38cda64a9f",
+  "prompts": {},
+  "sessions": {
+    "s_36c4b15bec8fc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "52ec7ac3-00e1-4637-8ce0-d3322a04daef",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "jkotze <jacques.kotze@gmail.com>"
+    }
+  }
+}
