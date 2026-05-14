@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://proofofinsight.org/schemas/v0.6.2/step.json",
+  "title": "PoI Insight Step",
+  "description": "Illustrative JSON Schema for a Proof of Insight (PoI) Insight Step, v0.6.2. The schema is NOT normative; the normative definition is the prose of §2 of the specification. Schema validation is the weakest of five validity gates (see Appendix A of the spec).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "type", "predecessors", "payload", "attestor", "signature", "timestamp"],
+  "properties": {
+    "version":   { "const": "0.6.2" },
+    "type":      { "enum": ["observe", "compute", "reason", "attest"] },
+    "predecessors": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step", "relation"],
+            "properties": {
+              "step":     { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "relation": { "enum": ["derived-from", "conditioned-on", "about"] }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step", "relation", "context_role", "declared_relevance_hash"],
+            "properties": {
+              "step":                    { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "relation":                { "const": "conditioned-on" },
+              "context_role":            { "type": "string" },
+              "declared_relevance_hash": { "$ref": "#/$defs/sha256" }
+            }
+          }
+        ]
+      }
+    },
+    "payload":   { "type": "object" },
+    "attestor":  { "type": "string", "format": "uri" },
+    "signature": { "type": "string", "minLength": 1 },
+    "timestamp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "authority", "token"],
+      "properties": {
+        "value":     { "type": "string", "format": "date-time" },
+        "authority": { "type": "string", "format": "uri" },
+        "token":     { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "contentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "hash"],
+      "properties": {
+        "uri":  { "type": "string", "format": "uri" },
+        "hash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "inlineOrRef": {
+      "oneOf": [
+        { "type": "object" },
+        { "$ref": "#/$defs/contentRef" }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if":   { "properties": { "type": { "const": "observe" } } },
+      "then": {
+        "properties": {
+          "predecessors": { "maxItems": 0 },
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["content_hash", "content_type", "source"],
+            "properties": {
+              "content_hash": { "$ref": "#/$defs/sha256" },
+              "content_type": { "type": "string" },
+              "source":       { "type": ["string", "object"] },
+              "provenance":   { "type": ["string", "object"] }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if":   { "properties": { "type": { "const": "compute" } } },
+      "then": {
+        "properties": {
+          "predecessors": {
+            "minItems": 1,
+            "items": { "properties": { "relation": { "const": "derived-from" } } }
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["function", "invocation", "invocation_hash", "output_hash", "environment"],
+            "properties": {
+              "function":        { "type": "string" },
+              "invocation":      { "$ref": "#/$defs/inlineOrRef" },
+              "invocation_hash": { "$ref": "#/$defs/sha256" },
+              "output_hash":     { "$ref": "#/$defs/sha256" },
+              "output_artifact": { "type": ["string", "object"] },
+              "environment": {
+                "type": "object",
+                "required": ["replay_regime"],
+                "properties": {
+                  "replay_regime": { "enum": ["bit-identical", "tolerance"] }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if":   { "properties": { "type": { "const": "reason" } } },
+      "then": {
+        "properties": {
+          "predecessors": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "relation": { "enum": ["derived-from", "conditioned-on"] }
+              }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "model", "replay_class",
+              "invocation", "invocation_hash",
+              "input_messages", "input_messages_hash",
+              "output_hash", "sampling"
+            ],
+            "properties": {
+              "model": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["identifier"],
+                "properties": {
+                  "identifier":   { "type": "string" },
+                  "weights_hash": { "$ref": "#/$defs/sha256" },
+                  "version":      { "type": "string" }
+                }
+              },
+              "replay_class":           { "enum": ["R1", "R2", "R3"] },
+              "invocation":             { "$ref": "#/$defs/inlineOrRef" },
+              "invocation_hash":        { "$ref": "#/$defs/sha256" },
+              "input_messages":         { "$ref": "#/$defs/inlineOrRef" },
+              "input_messages_hash":    { "$ref": "#/$defs/sha256" },
+              "tool_call_log_hash":     { "$ref": "#/$defs/sha256" },
+              "visible_rationale_hash": { "$ref": "#/$defs/sha256" },
+              "finding_type": {
+                "anyOf": [
+                  { "enum": ["conclusion", "no-finding", "insufficient-evidence", "negative-result"] },
+                  { "type": "string", "pattern": "^[a-z][a-z0-9\\-/]*$" }
+                ]
+              },
+              "output_hash":            { "$ref": "#/$defs/sha256" },
+              "output_artifact":        { "type": ["string", "object"] },
+              "sampling":               { "type": "object" },
+              "redaction_policy":       { "type": ["string", "object"] }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if":   { "properties": { "type": { "const": "attest" } } },
+      "then": {
+        "properties": {
+          "predecessors": {
+            "minItems": 1,
+            "items": { "properties": { "relation": { "const": "about" } } }
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["claim_type", "role", "claim_body", "claim_hash"],
+            "properties": {
+              "claim_type": { "type": "string", "format": "uri" },
+              "role":       { "type": "string" },
+              "claim_body": { "type": ["object", "string"] },
+              "claim_hash": { "$ref": "#/$defs/sha256" }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

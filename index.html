@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof of Insight — A specification for verifiable evidence in agentic AI analyses</title>
+<meta name="description" content="Proof of Insight (PoI) is an open specification for content-addressed, signed evidence in agentic AI analyses operating in regulated contexts. Working draft v0.6.2.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Proof of Insight">
+<meta property="og:description" content="A specification for verifiable evidence in agentic AI analyses. Working draft v0.6.2, open for review.">
+<meta property="og:url" content="https://proofofinsight.org/">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Spectral:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #FAF7F1;
+    --paper-deep: #F2EDE2;
+    --ink: #1A1816;
+    --ink-soft: #3D3935;
+    --muted: #756E64;
+    --rule: #D8D1C2;
+    --rule-soft: #E8E2D5;
+    --accent: #6B2C2C;
+    --accent-soft: #8B4040;
+    --warn-bg: #F4E9D8;
+    --warn-border: #C9A86A;
+    --warn-ink: #5C4218;
+    --measure: 38rem;
+    --gutter: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* — Status banner — */
+  .status {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    padding: 0.55rem var(--gutter);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #000;
+  }
+  .status::before {
+    content: "";
+    width: 7px; height: 7px;
+    background: #D9A642;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(217, 166, 66, 0.2);
+  }
+  .status strong { color: #fff; font-weight: 500; }
+  .status .sep { color: #5a5852; }
+
+  /* — Page frame — */
+  .page {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  /* — Masthead — */
+  header.masthead {
+    padding: 6rem 0 4rem;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .masthead .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+  .masthead h1 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(2.75rem, 6.5vw, 5rem);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.6rem;
+    color: var(--ink);
+  }
+  .masthead h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    color: var(--accent);
+  }
+  .masthead .subtitle {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 36;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+    line-height: 1.35;
+    color: var(--ink-soft);
+    max-width: 42rem;
+    margin: 0 0 2.5rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .meta dt {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .meta dd {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  /* — Section — */
+  section {
+    padding: 4.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .sec-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin: 0 0 0.85rem;
+    display: block;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 72, "SOFT" 50;
+    font-weight: 400;
+    font-size: clamp(1.85rem, 3.8vw, 2.55rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 0 0 1.5rem;
+    max-width: 32rem;
+  }
+
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 36, "SOFT" 50;
+    font-weight: 500;
+    font-size: 1.2rem;
+    line-height: 1.3;
+    margin: 2rem 0 0.6rem;
+    color: var(--ink);
+  }
+
+  p { max-width: var(--measure); margin: 0 0 1.1rem; }
+  p.lead {
+    font-size: 1.18rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 40rem;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: rgba(107, 44, 44, 0.4);
+    transition: text-decoration-color 0.15s;
+  }
+  a:hover { text-decoration-color: var(--accent); }
+
+  code, .mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.88em;
+    background: var(--paper-deep);
+    padding: 0.08em 0.35em;
+    border-radius: 2px;
+    color: var(--ink);
+  }
+
+  /* — Two-column grid — */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 760px) {
+    .grid-2 { grid-template-columns: 1fr 1fr; gap: 3rem; }
+  }
+  .col h3:first-child { margin-top: 0; }
+
+  /* — Affirms / Disclaims panels (the §1.4 move) — */
+  .scope {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 760px) {
+    .scope { grid-template-columns: 1fr 1fr; }
+  }
+  .scope-card {
+    border-top: 2px solid var(--ink);
+    padding: 1.5rem 0 0;
+  }
+  .scope-card.disclaim { border-top-color: var(--accent); }
+  .scope-card .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0 0 0.8rem;
+    color: var(--ink);
+  }
+  .scope-card.disclaim .tag { color: var(--accent); }
+  .scope-card h3 {
+    font-size: 1.35rem;
+    margin: 0 0 0.9rem;
+  }
+  .scope-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .scope-card li {
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    font-size: 0.98rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+  }
+  .scope-card li:last-child { border-bottom: none; }
+  .scope-card li::before {
+    content: "→";
+    color: var(--accent);
+    margin-right: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .scope-card.disclaim li::before {
+    content: "×";
+    color: var(--muted);
+  }
+
+  /* — Conformance table — */
+  .levels {
+    margin: 2.5rem 0 0;
+    border-top: 1px solid var(--ink);
+  }
+  .level {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  @media (min-width: 760px) {
+    .level { grid-template-columns: 5rem 12rem 1fr; gap: 2rem; }
+  }
+  .level-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 1.05rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .level-name {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 36, "SOFT" 50;
+    font-weight: 500;
+    font-size: 1.08rem;
+    color: var(--ink);
+  }
+  .level-desc {
+    font-size: 0.96rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 36rem;
+    margin: 0;
+  }
+  @media (max-width: 759px) {
+    .level-name { grid-column: 1 / -1; margin-top: -0.3rem; }
+    .level-desc { grid-column: 1 / -1; }
+  }
+
+  /* — Step-type cards — */
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--rule);
+    margin-top: 2rem;
+    border: 1px solid var(--rule);
+  }
+  @media (min-width: 720px) {
+    .steps { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1000px) {
+    .steps { grid-template-columns: repeat(4, 1fr); }
+  }
+  .step {
+    background: var(--paper);
+    padding: 1.6rem 1.4rem;
+  }
+  .step-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--accent);
+    margin: 0 0 0.4rem;
+    font-weight: 500;
+  }
+  .step-name::before {
+    content: "▸ ";
+    color: var(--muted);
+  }
+  .step h4 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 36, "SOFT" 50;
+    font-weight: 500;
+    font-size: 1.05rem;
+    margin: 0 0 0.6rem;
+    color: var(--ink);
+  }
+  .step p {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* — Read the spec CTA — */
+  .cta-spec {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4rem var(--gutter);
+    margin: 0;
+  }
+  .cta-spec .inner {
+    max-width: 64rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 800px) {
+    .cta-spec .inner { grid-template-columns: 1fr auto; gap: 4rem; }
+  }
+  .cta-spec h2 {
+    color: var(--paper);
+    font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+    margin: 0 0 0.6rem;
+    max-width: none;
+  }
+  .cta-spec p {
+    color: rgba(250, 247, 241, 0.7);
+    margin: 0;
+    max-width: 32rem;
+  }
+  .cta-spec .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 16rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.84rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border: 1px solid;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-primary {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+  .btn-primary:hover { background: #fff; text-decoration: none; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--paper);
+    border-color: rgba(250, 247, 241, 0.3);
+  }
+  .btn-secondary:hover {
+    background: rgba(250, 247, 241, 0.08);
+    border-color: var(--paper);
+    text-decoration: none;
+  }
+  .btn .arrow { margin-left: 1rem; opacity: 0.5; }
+  .btn:hover .arrow { opacity: 1; }
+
+  /* — Prior-work table — */
+  .prior {
+    margin-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .prior-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  @media (min-width: 720px) {
+    .prior-row { grid-template-columns: 12rem 1fr; gap: 2rem; }
+  }
+  .prior-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .prior-rel {
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 38rem;
+  }
+
+  /* — Editorial / aside — */
+  .aside {
+    background: var(--paper-deep);
+    border-left: 3px solid var(--accent);
+    padding: 1.4rem 1.6rem;
+    margin: 2rem 0;
+    max-width: var(--measure);
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+  .aside .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.5rem;
+    display: block;
+  }
+  .aside p { margin: 0; color: var(--ink-soft); }
+  .aside p + p { margin-top: 0.7rem; }
+
+  /* — Footer — */
+  footer {
+    padding: 3rem var(--gutter) 4rem;
+    border-top: 1px solid var(--rule);
+    background: var(--paper-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  footer .inner {
+    max-width: 64rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 720px) {
+    footer .inner { grid-template-columns: 2fr 1fr 1fr; }
+  }
+  footer h4 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: "opsz" 36;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin: 0 0 0.6rem;
+    letter-spacing: 0;
+  }
+  footer p { margin: 0 0 0.4rem; max-width: 28rem; }
+  footer ul { list-style: none; padding: 0; margin: 0; }
+  footer li { padding: 0.15rem 0; }
+  footer a { color: var(--ink-soft); }
+  footer a:hover { color: var(--accent); }
+
+  /* — Selection — */
+  ::selection { background: var(--accent); color: var(--paper); }
+
+  /* — Reduced motion — */
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="status">
+  <span><strong>Status</strong></span>
+  <span class="sep">·</span>
+  <span>Working Draft v0.6.2</span>
+  <span class="sep">·</span>
+  <span>Circulated for review by domain experts</span>
+  <span class="sep">·</span>
+  <span>Not a published standard</span>
+</div>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">Proof of Insight · An open specification</p>
+    <h1>Evidence for <em>agentic</em> AI analyses,<br>built for regulators.</h1>
+    <p class="subtitle">
+      Proof of Insight (PoI) is a specification for a content-addressed, signed
+      directed acyclic graph of typed derivation steps — and a single mechanical
+      algorithm that verifies analyses produced by agentic AI systems in regulated
+      contexts.
+    </p>
+    <dl class="meta">
+      <div>
+        <dt>Version</dt>
+        <dd>0.6.2 (working draft)</dd>
+      </div>
+      <div>
+        <dt>License</dt>
+        <dd>CC BY 4.0 · Apache 2.0</dd>
+      </div>
+      <div>
+        <dt>Editor</dt>
+        <dd>Arclio LLC (interim)</dd>
+      </div>
+      <div>
+        <dt>Canonical URL</dt>
+        <dd>proofofinsight.org/spec/v0.6.2/</dd>
+      </div>
+    </dl>
+  </header>
+
+  <!-- §1  Problem -->
+  <section id="problem">
+    <span class="sec-num">§1 · The problem</span>
+    <h2>Agentic analyses are reaching regulated decisions before the evidence has caught up.</h2>
+    <p class="lead">
+      Drug-development readiness reviews, model-risk assessments, clinical decision support,
+      environmental compliance reporting — analyses produced by agentic AI systems are now
+      contributing to decisions that regulators must scrutinise.
+    </p>
+    <p>
+      These analyses characteristically combine three classes of operation: ingestion of
+      external data, deterministic computation over that data, and non-deterministic
+      reasoning that interprets and concludes. Existing provenance frameworks — in-toto,
+      SLSA, Sigstore, PROV-W3C — address the first two. None admits non-deterministic
+      reasoning as a first-class operation. None provides a verification algorithm of the
+      precision a regulator requires to act independently of the producer over a graph
+      that includes such operations.
+    </p>
+    <p>
+      The result is that regulated agentic analyses currently rely on producer-controlled
+      audit logs, narrative descriptions, or post-hoc reconstructions. None of these is
+      mechanically verifiable. A regulator presented with such an analysis has no
+      protocol-level basis on which to confirm even the structural integrity of the work.
+    </p>
+  </section>
+
+  <!-- §2  Approach -->
+  <section id="approach">
+    <span class="sec-num">§2 · The core construction</span>
+    <h2>A proof is a signed, content-addressed graph of four step types.</h2>
+    <p>
+      PoI's central position is that a single primitive — a content-addressed, signed,
+      typed derivation step — is sufficient to express the evidence required for
+      regulated agentic analyses, and that the properties such evidence must possess
+      emerge as theorems over composed steps rather than as separately-designed features.
+    </p>
+    <p>
+      A PoI proof is a directed acyclic graph of such steps. Verification is a single
+      algorithm parameterised by step type. The taxonomy is fixed: four step types and
+      three edge relations. Domain specialisation is handled through a profile mechanism
+      without modifying the base.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <p class="step-name">observe</p>
+        <h4>External data, hashed and signed.</h4>
+        <p>Records the ingestion of an artifact by content hash, attributed to an authorised attestor. The trust-handoff boundary with source-data integrity regimes.</p>
+      </div>
+      <div class="step">
+        <p class="step-name">compute</p>
+        <h4>Deterministic functions, replayable.</h4>
+        <p>Records the application of a function to predecessor outputs. Bit-identical replay where the environment admits it; tolerance equivalence where it doesn't.</p>
+      </div>
+      <div class="step">
+        <p class="step-name">reason</p>
+        <h4>Non-deterministic models, as first-class evidence.</h4>
+        <p>Records a model invocation with inputs, sampling, visible rationale, and an explicit replay class (R1 recorded · R2 re-executable · R3 reproducible).</p>
+      </div>
+      <div class="step">
+        <p class="step-name">attest</p>
+        <h4>Signed claims about predecessor steps.</h4>
+        <p>Records review, validation, qualification, prespecification, supersession, or adequacy — by a named role, about identified predecessors. Never an input.</p>
+      </div>
+    </div>
+
+    <div class="aside">
+      <span class="label">Note on the novel claim</span>
+      <p>
+        The promotion of <code>reason</code> to a first-class step type — distinct from
+        <code>compute</code>, with its own predecessor relations, replay regime,
+        visible-rationale evidence field, and verification semantics — is the principal
+        way in which PoI extends prior provenance frameworks. Recording the model's
+        narrative of its own analysis as content-addressed evidence, hash-bound to
+        inputs and downstream consumers, is what makes agentic reasoning legible to
+        mechanical inspection.
+      </p>
+    </div>
+  </section>
+
+  <!-- §3  Scope — the §1.4 move, brought to the front -->
+  <section id="scope">
+    <span class="sec-num">§3 · Scope</span>
+    <h2>Verification, not credibility.</h2>
+    <p class="lead">
+      PoI establishes that an analysis was produced as recorded. It is silent on whether
+      the recorded analysis was the right analysis. This distinction is constitutive of
+      the protocol's scope, not a footnote.
+    </p>
+
+    <div class="scope">
+      <div class="scope-card">
+        <p class="tag">A conforming proof establishes</p>
+        <h3>What PoI <em>does</em> claim</h3>
+        <ul>
+          <li>Recorded inputs are bound to recorded operations through identified attestations.</li>
+          <li>The binding is tamper-evident under SHA-256 and the chosen signature scheme.</li>
+          <li>Deterministic operations are replayable under their declared regime.</li>
+          <li>Non-deterministic operations are recorded with stated conditions and explicit re-execution semantics.</li>
+          <li>Predicates over the typed-step structure — required reviews, role authorisations, prespecification ordering — hold mechanically.</li>
+        </ul>
+      </div>
+
+      <div class="scope-card disclaim">
+        <p class="tag">A conforming proof does not establish</p>
+        <h3>What PoI does <em>not</em> claim</h3>
+        <ul>
+          <li>That recorded inputs are accurate, complete, or fit for purpose.</li>
+          <li>That recorded methods are appropriate to the question being asked.</li>
+          <li>That recorded conclusions are correct, calibrated, or defensible.</li>
+          <li>That a reviewer applying domain judgment would reach the same conclusion.</li>
+          <li>That the analysis is sufficient to support any specific regulatory action.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="margin-top: 2rem;">
+      The protocol answers a <em>process-fidelity</em> question and is silent on the
+      <em>analytical-correctness</em> question. Both matter for regulated decisions, but
+      they are addressed by different mechanisms: PoI by mechanical verification,
+      analytical correctness by qualified human review under domain-specific standards.
+      A reproducibly wrong analysis remains wrong; the protocol's value to a regulator
+      is that it makes the analysis legible and mechanically inspectable, so that
+      human judgment can focus on the questions that require it.
+    </p>
+  </section>
+
+  <!-- §4  Conformance -->
+  <section id="conformance">
+    <span class="sec-num">§4 · Conformance</span>
+    <h2>Five levels. Each adds constraints, not features.</h2>
+    <p>
+      Conformance levels are defined as constraints over which step types must appear,
+      which replay classes are admissible for outputs, and which roles must sign which
+      claims. The predicate set grows monotonically with level. A producer's claimed
+      level is recorded on the signed manifest and checked against the proof DAG.
+    </p>
+
+    <div class="levels">
+      <div class="level">
+        <span class="level-id">L1</span>
+        <span class="level-name">Provenance</span>
+        <p class="level-desc">
+          <code>observe</code> and <code>compute</code> only. All steps signed, replay
+          regime declared. Sufficient for low-risk computational analyses with no
+          reasoning component.
+        </p>
+      </div>
+      <div class="level">
+        <span class="level-id">L2</span>
+        <span class="level-name">Identity</span>
+        <p class="level-desc">
+          L1 plus bound organisational or individual identity for every attestor and a
+          recognised timestamp authority. Sufficient for regulated computational
+          analyses without reasoning.
+        </p>
+      </div>
+      <div class="level">
+        <span class="level-id">L3</span>
+        <span class="level-name">Reasoning</span>
+        <p class="level-desc">
+          L2 plus <code>reason</code> steps admitted, at replay class R2 (re-executable)
+          or higher for any step ancestor to an output. Model identifiers must resolve.
+        </p>
+      </div>
+      <div class="level">
+        <span class="level-id">L4A</span>
+        <span class="level-name">Independently Attested</span>
+        <p class="level-desc">
+          L3 plus independent qualified review of every reasoning output, plus
+          prespecification for confirmatory analyses. The level for regulated agentic
+          workflows on closed-weight hosted models with strong governance.
+        </p>
+      </div>
+      <div class="level">
+        <span class="level-id">L4R</span>
+        <span class="level-name">Reproducible</span>
+        <p class="level-desc">
+          L4A plus replay class R3 — bit-identical reproduction against pinned weights —
+          for any reasoning ancestor of a profile-designated high-stakes output. The
+          level for open-weight, controlled-runtime deployments.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §5  Prior work -->
+  <section id="prior-work">
+    <span class="sec-num">§5 · Relationship to prior work</span>
+    <h2>PoI extends an existing attestation lineage. It does not replace it.</h2>
+    <p>
+      The signature, content-addressing, and timestamping primitives PoI relies on are
+      intended to be instantiated through existing ecosystems via informative profiles.
+      The contribution beyond these frameworks is the typed-step taxonomy admitting
+      non-deterministic reasoning, the typed edge relations, the visible-rationale
+      evidence field, and a single verification algorithm that extends replay semantics
+      to non-deterministic operations.
+    </p>
+
+    <div class="prior">
+      <div class="prior-row">
+        <span class="prior-name">in-toto · SLSA</span>
+        <p class="prior-rel">
+          The closest cryptographic substrate. PoI instantiates its signing and
+          attestation primitives via the Sigstore/Rekor profile. The <code>observe</code>
+          step's <code>provenance</code> field is the explicit integration point with
+          in-toto attestations.
+        </p>
+      </div>
+      <div class="prior-row">
+        <span class="prior-name">Sigstore</span>
+        <p class="prior-rel">
+          Deployed signing and transparency-log infrastructure. PoI's §7.1 profile binds
+          <code>signature</code> to keyless signing and <code>timestamp</code> to Rekor
+          inclusion proofs.
+        </p>
+      </div>
+      <div class="prior-row">
+        <span class="prior-name">PROV-W3C · PROV-AGENT</span>
+        <p class="prior-rel">
+          Provenance data models. PoI differs in being a verification protocol with a
+          single mechanical algorithm, not a data model. PoI proofs can be lifted to
+          PROV representations for interoperability.
+        </p>
+      </div>
+      <div class="prior-row">
+        <span class="prior-name">Certificate Transparency (RFC 6962)</span>
+        <p class="prior-rel">
+          Closest precedent for a protocol whose verification algorithm is mechanically
+          tractable and whose claims are precisely scoped. PoI borrows CT's discipline
+          of stating exactly what the protocol does and does not assert.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Read the spec — primary CTA outside the page frame for visual weight -->
+<aside class="cta-spec" id="read">
+  <div class="inner">
+    <div>
+      <h2>The specification is the document.</h2>
+      <p>
+        This page is a doorway. The protocol — step structure, edge relations, canonical
+        encoding, verification algorithm, conformance predicates, and the regulatory
+        appendix — is in the spec.
+      </p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="/spec/v0.6.2/">
+        <span>Read v0.6.2 →</span>
+        <span class="arrow">spec</span>
+      </a>
+      <a class="btn btn-secondary" href="/spec/v0.6.2/poi-v0.6.2.pdf">
+        <span>Download PDF</span>
+        <span class="arrow">↓</span>
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/" target="_blank" rel="noopener">
+        <span>Issue tracker</span>
+        <span class="arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</aside>
+
+<div class="page">
+
+  <!-- §6  Editorial / Get involved -->
+  <section id="editorial">
+    <span class="sec-num">§6 · Editorial process</span>
+    <h2>Open review, with the intent to move beyond a single editor.</h2>
+
+    <div class="grid-2">
+      <div class="col">
+        <h3>Status</h3>
+        <p>
+          v0.6.2 is a working draft circulated for review by domain experts in
+          cryptographic provenance, regulated artificial intelligence, and standards
+          development. No production deployments exist at any version. The protocol is
+          pre-1.0.
+        </p>
+        <h3>Editorial control</h3>
+        <p>
+          Editorial control rests with Arclio LLC pending establishment of an
+          independent editorial body. Arclio is the current steward, not the owner.
+          The CC BY 4.0 licence and the §0.3 patent non-assertion covenant are
+          structured to make this transition possible without re-licensing.
+        </p>
+      </div>
+
+      <div class="col">
+        <h3>How to engage</h3>
+        <p>
+          Reviewers are invited to submit comments, ambiguities, and proposed changes
+          through the public issue tracker referenced at the canonical spec URL. Threat
+          model and profile-specific feedback is especially welcome — §6 of the spec
+          and the §7.4 / §7.5 profile sketches are explicitly under-developed pending
+          stabilisation of the core.
+        </p>
+        <h3>Versioning</h3>
+        <p>
+          Document and protocol version are intentionally the same. v0.6.2 supersedes
+          v0.6.1 with backward-compatible additions. v0.6.1 L4 claims map cleanly to
+          v0.6.2 L4R; no producer compliant with v0.6.1 is rendered non-compliant.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §7  Legal -->
+  <section id="legal">
+    <span class="sec-num">§7 · Licence, IPR, and trademarks</span>
+    <h2>Spec under CC BY 4.0. Reference artifacts under Apache 2.0.</h2>
+    <p>
+      The specification document is licensed under the
+      <a href="https://creativecommons.org/licenses/by/4.0/legalcode" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International License</a>.
+      Normative machine-readable schemas, the reference verifier implementation, and
+      the conformance test suite are published separately under the Apache License 2.0,
+      including its patent grant provisions.
+    </p>
+    <p>
+      Arclio LLC covenants not to assert any patent claims it owns or controls against
+      any implementation that conforms to the conformance test suite at the version
+      under which it claims conformance. Until a conformance test suite is published
+      for a given version, the covenant applies to good-faith implementations of the
+      normative requirements of §§1–5 at that version. The covenant binds Arclio LLC
+      only; it does not address claims that may be held by third parties.
+    </p>
+    <p>
+      <span class="mono">Proof of Insight</span> and <span class="mono">PoI</span>
+      are trademarks of Arclio LLC. Use of these marks to describe an implementation
+      as conformant is governed by the PoI Conformance Mark Policy, published
+      separately. Use of the marks in this specification and in any derivative work
+      is permitted for accurate reference to this specification.
+    </p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="inner">
+    <div>
+      <h4>Proof of Insight</h4>
+      <p>
+        An open specification for verifiable evidence in agentic AI analyses operating
+        in regulated contexts. Working draft v0.6.2.
+      </p>
+      <p style="margin-top: 0.8rem;">
+        © 2026 Arclio LLC, as interim editor.<br>
+        Specification licensed CC BY 4.0.
+      </p>
+    </div>
+
+    <div>
+      <h4>Specification</h4>
+      <ul>
+        <li><a href="/spec/v0.6.2/">Read v0.6.2</a></li>
+        <li><a href="/spec/v0.6.2/poi-v0.6.2.pdf">PDF</a></li>
+        <li><a href="/spec/v0.6.2/schema/step.json">Step schema</a></li>
+        <li><a href="/spec/v0.6.2/changelog/">Changes from v0.6.1</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Process</h4>
+      <ul>
+        <li><a href="#editorial">Editorial process</a></li>
+        <li><a href="/issues/">Issue tracker</a></li>
+        <li><a href="#legal">Licence & IPR</a></li>
+        <li><a href="mailto:editors@proofofinsight.org">editors@</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
