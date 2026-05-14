@@ -1,0 +1,25 @@
+Caddyfile
+  s_9b64a9035d88d2::t_89598f2498d3f2 1-6
+Dockerfile
+  s_9b64a9035d88d2::t_7109e111431bae 1-7
+railway.json
+  s_9b64a9035d88d2::t_915743e01076f5 1-12
+.gitignore
+  s_9b64a9035d88d2::t_add8e3f74140b3 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "8e1b0b3766a4b425aab33204294d0b7779546baf",
+  "prompts": {},
+  "sessions": {
+    "s_9b64a9035d88d2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e4edf141-6c65-4247-82c1-74d78efcae7f",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "jkotze <jacques.kotze@gmail.com>"
+    }
+  }
+}
