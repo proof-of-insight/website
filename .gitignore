@@ -1,3 +1,16 @@
 .claude/
 SETUP_BRIEF.md
 .DS_Store
+
+# Pandoc/PDF render artifacts (handled by CI; safe locally too)
+*.aux
+*.log
+*.out
+*.toc
+
+# Build output (the workflow assembles dist/ from sources)
+dist/
+
+# Local environments
+.env
+.env.local
