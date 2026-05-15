@@ -43,7 +43,29 @@ jobs:
             texlive-xetex \
             texlive-fonts-recommended \
             texlive-fonts-extra \
+            texlive-latex-extra \
             fonts-jetbrains-mono
+
+      - name: Install Spectral font
+        # Spectral isn't packaged for Debian/Ubuntu; pull the OFL TTFs from
+        # the Google Fonts repo at a pinned commit so xelatex can resolve
+        # `mainfont=Spectral` against the brand-correct face.
+        run: |
+          SPECTRAL_REF="main"
+          BASE="https://raw.githubusercontent.com/google/fonts/${SPECTRAL_REF}/ofl/spectral"
+          DEST=/usr/share/fonts/truetype/spectral
+          sudo mkdir -p "${DEST}"
+          for face in \
+            Spectral-Regular.ttf \
+            Spectral-Italic.ttf \
+            Spectral-Medium.ttf \
+            Spectral-MediumItalic.ttf \
+            Spectral-Bold.ttf \
+            Spectral-BoldItalic.ttf; do
+            sudo curl -fsSL "${BASE}/${face}" -o "${DEST}/${face}"
+          done
+          sudo fc-cache -f
+          fc-list | grep -i spectral | head -4
 
       - name: Render specifications
         run: |

@@ -62,16 +62,32 @@ pandoc "${SPEC_MD}" \
   --output="${OUTDIR}/index.html"
 
 echo "Rendering PDF..."
-if ! pandoc "${SPEC_MD}" \
+# Map the handful of unicode math symbols used in the spec (∈ ∉ ⊂ ≥ ≤) to
+# a glyph-bearing fallback font, since Spectral and JetBrains Mono don't
+# cover them. Without this, xelatex emits "missing character" warnings
+# and prints empty boxes.
+PDF_PREAMBLE="$(mktemp)"
+trap 'rm -f "${PDF_PREAMBLE}"; rm -rf "${WORKDIR}"' EXIT
+cat > "${PDF_PREAMBLE}" <<'EOF'
+\usepackage{newunicodechar}
+\newfontfamily{\unimathfallback}{DejaVu Sans}
+\newunicodechar{∈}{{\unimathfallback ∈}}
+\newunicodechar{∉}{{\unimathfallback ∉}}
+\newunicodechar{⊂}{{\unimathfallback ⊂}}
+\newunicodechar{⊃}{{\unimathfallback ⊃}}
+\newunicodechar{≥}{{\unimathfallback ≥}}
+\newunicodechar{≤}{{\unimathfallback ≤}}
+EOF
+
+pandoc "${SPEC_MD}" \
   --from=gfm \
   --pdf-engine=xelatex \
   --metadata title="Proof of Insight ${VERSION}" \
   --variable mainfont="Spectral" \
   --variable monofont="JetBrains Mono" \
   --variable geometry:margin=1in \
-  --output="${OUTDIR}/poi-${VERSION}.pdf" 2>/dev/null; then
-  echo "PDF render skipped (xelatex or the configured fonts are unavailable)." >&2
-fi
+  --include-in-header="${PDF_PREAMBLE}" \
+  --output="${OUTDIR}/poi-${VERSION}.pdf"
 
 SCHEMA_SRC="${WORKDIR}/spec-repo/schema/${VERSION}"
 if [[ -d "${SCHEMA_SRC}" ]]; then
