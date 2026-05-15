@@ -1,0 +1,22 @@
+build/render-spec.sh
+  s_131bab40123cac::t_65829419e941d8 65-82,89-90
+.github/workflows/build-and-deploy.yml
+  s_131bab40123cac::t_6dc88990476072 48-68
+  s_131bab40123cac::t_1ad75a352088f3 46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "7c93c80c69ac1df7d9f92752b1e7d488390f6026",
+  "prompts": {},
+  "sessions": {
+    "s_131bab40123cac": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "32696a2c-992e-4a70-9a2e-1d52eab81180",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "jkotze <jacques.kotze@gmail.com>"
+    }
+  }
+}
