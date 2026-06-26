@@ -82,7 +82,13 @@ cat > "${PDF_PREAMBLE}" <<'EOF'
 \newunicodechar{′}{\ensuremath{{}^\prime}}
 EOF
 
-pandoc "${SPEC_MD}" \
+# The U+2032 PRIME carries a math superscript class that survives
+# newunicodechar, so xelatex raises "Missing $ inserted" on it. Substitute a
+# text prime mark for the PDF render only; the HTML render keeps U+2032.
+PDF_MD="${WORKDIR}/pdf-source.md"
+perl -CSD -pe 's/\x{2032}/\x{2019}/g' "${SPEC_MD}" > "${PDF_MD}"
+
+pandoc "${PDF_MD}" \
   --from=gfm \
   --pdf-engine=xelatex \
   --metadata title="Proof of Insight ${VERSION}" \
