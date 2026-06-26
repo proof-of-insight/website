@@ -23,11 +23,6 @@ concurrency:
 # is tagged in proof-of-insight/spec.
 env:
   SPEC_VERSIONS: "v0.6.2"
-  # Bootstrap override: render every version from this ref instead of
-  # its matching tag. Set while the spec repository has not yet been
-  # tagged. Remove this variable once `git tag v0.6.2 && git push --tags`
-  # has run, so versioned URLs lock to immutable tag contents.
-  SPEC_REF_OVERRIDE: "main"
 
 jobs:
   build:
