@@ -77,9 +77,9 @@ cat > "${PDF_PREAMBLE}" <<'EOF'
 \newunicodechar{⊃}{{\unimathfallback ⊃}}
 \newunicodechar{≥}{{\unimathfallback ≥}}
 \newunicodechar{≤}{{\unimathfallback ≤}}
-\newunicodechar{±}{{\unimathfallback ±}}
-\newunicodechar{δ}{{\unimathfallback δ}}
-\newunicodechar{′}{{\unimathfallback ′}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{δ}{\ensuremath{\delta}}
+\newunicodechar{′}{\ensuremath{{}^\prime}}
 EOF
 
 pandoc "${SPEC_MD}" \
