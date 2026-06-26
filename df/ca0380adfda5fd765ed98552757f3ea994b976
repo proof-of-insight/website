@@ -1,0 +1,21 @@
+index.html
+  s_5b16f086b0ed9c::t_77d789ea2904c2 7,11,532,553,565,819-820,823,846,871-877,919,930-934
+.github/workflows/build-and-deploy.yml
+  s_5b16f086b0ed9c::t_77d789ea2904c2 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.1",
+  "base_commit_sha": "dfca0380adfda5fd765ed98552757f3ea994b976",
+  "prompts": {},
+  "sessions": {
+    "s_5b16f086b0ed9c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "27918a68-13d8-4f78-ac7c-6d09e7aa82d7",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "jkotze <jacques.kotze@gmail.com>"
+    }
+  }
+}
